@@ -19,6 +19,15 @@ jobs:
             cd ~/pharmacy1
             sudo git fetch origin master
             sudo git reset --hard origin/master
-            sudo ln -s /usr/bin/docker-compose /usr/local/bin/docker-compose || true
-            sudo docker-compose down
-            sudo docker-compose up -d --build
+            
+            if ! command -v docker-compose &> /dev/null
+            then
+              if command -v docker &> /dev/null && docker compose version &> /dev/null
+              then
+                echo "Linking docker compose..."
+                sudo ln -s "$(which docker)" /usr/local/bin/docker-compose || true
+              fi
+            fi
+            
+            sudo docker-compose down || sudo docker compose down
+            sudo docker-compose up -d --build || sudo docker compose up -d --build
